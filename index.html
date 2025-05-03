@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>Stündliche Wettervorhersage</title>
+  <title>Stündliche Wettervorhersage Erfurt</title>
   <style>
     body {
       font-family: sans-serif;
@@ -28,7 +28,7 @@
   </style>
 </head>
 <body>
-  <h1>Stündliche Wettervorhersage</h1>
+  <h1>Stündliche Wettervorhersage Erfurt</h1>
   <div class="vorhersage" id="vorhersage">Lade...</div>
 
   <script>
@@ -64,7 +64,7 @@
     };
 
     async function ladeVorhersage() {
-      const url = 'https://api.open-meteo.com/v1/forecast?latitude=52.52&longitude=13.41&hourly=temperature_2m,weathercode,windspeed_10m,precipitation_probability&timezone=auto';
+      const url = 'https://api.open-meteo.com/v1/forecast?latitude=50.98&longitude=11.03&hourly=temperature_2m,weathercode,windspeed_10m,precipitation_probability&timezone=auto';
       const res = await fetch(url);
       const data = await res.json();
       const zeiten = data.hourly.time;
