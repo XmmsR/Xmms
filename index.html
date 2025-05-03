@@ -2,7 +2,7 @@
 <html lang="de">
 <head>
   <meta charset="UTF-8">
-  <title>Stündliche Wettervorhersage Erfurt</title>
+  <title>Stündliche Wettervorhersage</title>
   <style>
     body {
       font-family: sans-serif;
@@ -11,6 +11,15 @@
     }
     h1 {
       margin-bottom: 20px;
+    }
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    select {
+      font-size: 1em;
+      padding: 5px;
     }
     .vorhersage {
       display: grid;
@@ -28,7 +37,13 @@
   </style>
 </head>
 <body>
-  <h1>Stündliche Wettervorhersage Erfurt</h1>
+  <div class="header">
+    <h1>Stündliche Wettervorhersage</h1>
+    <select id="stadt" onchange="ladeVorhersage()">
+      <option value="erfurt">Erfurt</option>
+      <option value="szeged">Szeged</option>
+    </select>
+  </div>
   <div class="vorhersage" id="vorhersage">Lade...</div>
 
   <script>
@@ -63,8 +78,15 @@
       99: 'Gewitter mit starkem Hagel'
     };
 
+    const orte = {
+      erfurt: { lat: 50.98, lon: 11.03 },
+      szeged: { lat: 46.25, lon: 20.15 }
+    };
+
     async function ladeVorhersage() {
-      const url = 'https://api.open-meteo.com/v1/forecast?latitude=50.98&longitude=11.03&hourly=temperature_2m,weathercode,windspeed_10m,precipitation_probability&timezone=auto';
+      const stadt = document.getElementById('stadt').value;
+      const koordinaten = orte[stadt];
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${koordinaten.lat}&longitude=${koordinaten.lon}&hourly=temperature_2m,weathercode,windspeed_10m,precipitation_probability&timezone=auto`;
       const res = await fetch(url);
       const data = await res.json();
       const zeiten = data.hourly.time;
