@@ -88,7 +88,7 @@
     async function ladeVorhersage() {
       const stadt = document.getElementById('stadt').value;
       const koordinaten = orte[stadt];
-      const url = `https://api.open-meteo.com/v1/forecast?latitude=${koordinaten.lat}&longitude=${koordinaten.lon}&hourly=temperature_2m,weathercode,windspeed_10m,precipitation_probability&timezone=auto`;
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${koordinaten.lat}&longitude=${koordinaten.lon}&hourly=temperature_2m,weathercode,windspeed_10m,precipitation_probability,precipitation_sum&timezone=auto`;
       const res = await fetch(url);
       const data = await res.json();
       const zeiten = data.hourly.time;
@@ -96,7 +96,7 @@
       const winde = data.hourly.windspeed_10m;
       const wettercodes = data.hourly.weathercode;
       const regenwahrscheinlichkeit = data.hourly.precipitation_probability;
-      const niederschlag = data.precipitation;
+      const niederschlag = data.hourly.precipitation_sum;
 
       const ausgabe = document.getElementById('vorhersage');
       ausgabe.innerHTML = '';
