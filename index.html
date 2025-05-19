@@ -9,9 +9,6 @@
       padding: 20px;
       background: #f4f4f4;
     }
-    h1 {
-      margin-bottom: 20px;
-    }
     .header {
       display: flex;
       align-items: center;
@@ -23,7 +20,7 @@
     }
     .vorhersage {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
       gap: 15px;
     }
     .stunde {
@@ -40,9 +37,9 @@
   <div class="header">
     <h1>Stündliche Wettervorhersage</h1>
     <select id="stadt" onchange="ladeVorhersage()">
-      <option value="szeged">Szeged</option>
-      <option value="szatymaz">Szatymaz</option>
       <option value="erfurt">Erfurt</option>
+      <option value="szeged">Szeged</option>
+      <option value="bergen">Bergen</option>
     </select>
   </div>
   <div class="vorhersage" id="vorhersage">Lade...</div>
@@ -82,29 +79,32 @@
     const orte = {
       erfurt: { lat: 50.98, lon: 11.03 },
       szeged: { lat: 46.25, lon: 20.15 },
-      szatymaz: { lat: 46.32, lon: 20.04 }
+      bergen: { lat: 60.39, lon: 5.32 }
     };
 
     async function ladeVorhersage() {
       const stadt = document.getElementById('stadt').value;
       const koordinaten = orte[stadt];
-      const url = `https://api.open-meteo.com/v1/forecast?latitude=${koordinaten.lat}&longitude=${koordinaten.lon}&hourly=temperature_2m,weathercode,windspeed_10m,precipitation_probability,precipitation,rain&timezone=auto`;
+      const url = `https://api.open-meteo.com/v1/forecast?latitude=${koordinaten.lat}&longitude=${koordinaten.lon}&hourly=temperature_2m,weathercode,windspeed_10m,precipitation_probability,precipitation_sum&timezone=auto`;
       const res = await fetch(url);
       const data = await res.json();
+
       const zeiten = data.hourly.time;
       const temperaturen = data.hourly.temperature_2m;
       const winde = data.hourly.windspeed_10m;
       const wettercodes = data.hourly.weathercode;
       const regenwahrscheinlichkeit = data.hourly.precipitation_probability;
-      const niederschlag = data.hourly.precipitation;
-      const niederschlag1 = data.hourly.rain;
+      const niederschlag_mm = data.hourly.precipitation_sum;
 
       const ausgabe = document.getElementById('vorhersage');
       ausgabe.innerHTML = '';
 
       const jetzt = new Date();
       const aktuelleStunde = jetzt.getHours();
-      const startIndex = zeiten.findIndex(t => new Date(t).getHours() === aktuelleStunde && new Date(t).getDate() === jetzt.getDate());
+      const startIndex = zeiten.findIndex(t => {
+        const d = new Date(t);
+        return d.getHours() === aktuelleStunde && d.getDate() === jetzt.getDate();
+      });
 
       for (let i = startIndex; i < startIndex + 24 && i < zeiten.length; i++) {
         const zeit = new Date(zeiten[i]);
@@ -113,8 +113,7 @@
         const wind = winde[i];
         const code = wettercodes[i];
         const regen = regenwahrscheinlichkeit[i];
-        const mm = niederschlag1[i];
-        const mm = niederschlag[i];
+        const mm = niederschlag_mm[i];
         const bedingung = codes[code] || 'Unbekannt';
 
         const block = document.createElement('div');
@@ -124,7 +123,7 @@
           `Temperatur: ${temp}°C\n` +
           `Wind: ${wind} km/h\n` +
           `Zustand: ${bedingung}\n` +
-          `Regenwahrscheinlichkeit: ${regen}%`;
+          `Regenwahrscheinlichkeit: ${regen}%\n` +
           `Niederschlag: ${mm} mm`;
 
         ausgabe.appendChild(block);
