@@ -4,33 +4,11 @@
   <meta charset="UTF-8">
   <title>Stündliche Wettervorhersage</title>
   <style>
-    body {
-      font-family: sans-serif;
-      padding: 20px;
-      background: #f4f4f4;
-    }
-    .header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-    select {
-      font-size: 1em;
-      padding: 5px;
-    }
-    .vorhersage {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-      gap: 15px;
-    }
-    .stunde {
-      background: white;
-      padding: 10px;
-      border-radius: 5px;
-      box-shadow: 0 0 5px rgba(0,0,0,0.1);
-      font-size: 0.9em;
-      white-space: pre-line;
-    }
+    body{font-family:sans-serif;padding:20px;background:#f4f4f4}
+    .header{display:flex;align-items:center;gap:10px;margin-bottom:20px}
+    select{font-size:1em;padding:5px}
+    .vorhersage{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:15px}
+    .stunde{background:white;padding:10px;border-radius:5px;box-shadow:0 0 5px rgba(0,0,0,0.1);font-size:0.9em;white-space:pre-line}
   </style>
 </head>
 <body>
@@ -45,93 +23,45 @@
   <div class="vorhersage" id="vorhersage">Lade...</div>
 
   <script>
-    const codes = {
-      0: 'Klarer Himmel',
-      1: 'Überwiegend klar',
-      2: 'Teilweise bewölkt',
-      3: 'Bedeckt',
-      45: 'Nebel',
-      48: 'Reifnebel',
-      51: 'Leichter Nieselregen',
-      53: 'Mäßiger Nieselregen',
-      55: 'Starker Nieselregen',
-      56: 'Leichter gefrierender Nieselregen',
-      57: 'Starker gefrierender Nieselregen',
-      61: 'Leichter Regen',
-      63: 'Mäßiger Regen',
-      65: 'Starker Regen',
-      66: 'Leichter gefrierender Regen',
-      67: 'Starker gefrierender Regen',
-      71: 'Leichter Schneefall',
-      73: 'Mäßiger Schneefall',
-      75: 'Starker Schneefall',
-      77: 'Schneegriesel',
-      80: 'Leichte Regenschauer',
-      81: 'Mäßige Regenschauer',
-      82: 'Heftige Regenschauer',
-      85: 'Leichte Schneeschauer',
-      86: 'Starke Schneeschauer',
-      95: 'Gewitter',
-      96: 'Gewitter mit leichtem Hagel',
-      99: 'Gewitter mit starkem Hagel'
-    };
+    const codes={0:'Klarer Himmel',1:'Überwiegend klar',2:'Teilweise bewölkt',3:'Bedeckt',45:'Nebel',48:'Reifnebel',
+      51:'Leichter Nieselregen',53:'Mäßiger Nieselregen',55:'Starker Nieselregen',56:'Leichter gefrierender Nieselregen',
+      57:'Starker gefrierender Nieselregen',61:'Leichter Regen',63:'Mäßiger Regen',65:'Starker Regen',
+      66:'Leichter gefrierender Regen',67:'Starker gefrierender Regen',71:'Leichter Schneefall',73:'Mäßiger Schneefall',
+      75:'Starker Schneefall',77:'Schneegriesel',80:'Leichte Regenschauer',81:'Mäßige Regenschauer',82:'Heftige Regenschauer',
+      85:'Leichte Schneeschauer',86:'Starke Schneeschauer',95:'Gewitter',96:'Gewitter mit leichtem Hagel',99:'Gewitter mit starkem Hagel'};
+    const orte={erfurt:{lat:50.98,lon:11.03},szeged:{lat:46.25,lon:20.15},bergen:{lat:60.39,lon:5.32}};
 
-    const orte = {
-      erfurt: { lat: 50.98, lon: 11.03 },
-      szeged: { lat: 46.25, lon: 20.15 },
-      bergen: { lat: 60.39, lon: 5.32 }
-    };
-
-    async function ladeVorhersage() {
-      const stadt = document.getElementById('stadt').value;
-      const koordinaten = orte[stadt];
-      const url = `https://api.open-meteo.com/v1/forecast?latitude=${koordinaten.lat}&longitude=${koordinaten.lon}&hourly=temperature_2m,weathercode,windspeed_10m,precipitation_probability,precipitation_sum&timezone=auto`;
-      const res = await fetch(url);
-      const data = await res.json();
-
-      const zeiten = data.hourly.time;
-      const temperaturen = data.hourly.temperature_2m;
-      const winde = data.hourly.windspeed_10m;
-      const wettercodes = data.hourly.weathercode;
-      const regenwahrscheinlichkeit = data.hourly.precipitation_probability;
-      const niederschlag_mm = data.hourly.precipitation_sum;
-
-      const ausgabe = document.getElementById('vorhersage');
-      ausgabe.innerHTML = '';
-
-      const jetzt = new Date();
-      const aktuelleStunde = jetzt.getHours();
-      const startIndex = zeiten.findIndex(t => {
-        const d = new Date(t);
-        return d.getHours() === aktuelleStunde && d.getDate() === jetzt.getDate();
-      });
-
-      for (let i = startIndex; i < startIndex + 24 && i < zeiten.length; i++) {
-        const zeit = new Date(zeiten[i]);
-        const uhrzeit = zeit.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        const temp = temperaturen[i];
-        const wind = winde[i];
-        const code = wettercodes[i];
-        const regen = regenwahrscheinlichkeit[i];
-        const mm = niederschlag_mm[i];
-        const bedingung = codes[code] || 'Unbekannt';
-
-        const block = document.createElement('div');
-        block.className = 'stunde';
-        block.innerText =
-          `Uhrzeit: ${uhrzeit}\n` +
-          `Temperatur: ${temp}°C\n` +
-          `Wind: ${wind} km/h\n` +
-          `Zustand: ${bedingung}\n` +
-          `Regenwahrscheinlichkeit: ${regen}%\n` +
-          `Niederschlag: ${mm} mm`;
-
-        ausgabe.appendChild(block);
+    async function ladeVorhersage(){
+      const st=document.getElementById('stadt').value;
+      const {lat,lon}=orte[st];
+      const url=`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}`+
+        `&hourly=temperature_2m,weathercode,windspeed_10m,precipitation_probability,precipitation&timezone=auto`;
+      let data;
+      try{ data=(await fetch(url)).json() } catch{ document.getElementById('vorhersage').innerText='Fehler'; return }
+      const d=await data;
+      const {time,temperature_2m,windspeed_10m,weathercode,precipitation_probability,precipitation} = d.hourly;
+      const out=document.getElementById('vorhersage');
+      out.innerHTML='';
+      const now=new Date(),h=now.getHours(),day=now.getDate();
+      const start=time.findIndex(t=>{const D=new Date(t);return D.getHours()===h&&D.getDate()===day});
+      for(let i=start;i<start+24&&i<time.length;i++){
+        const D=new Date(time[i]);
+        const txt=
+          `Uhrzeit: ${D.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})}\n`+
+          `Temperatur: ${temperature_2m[i]}°C\n`+
+          `Wind: ${windspeed_10m[i]} km/h\n`+
+          `Zustand: ${codes[weathercode[i]]||'Unbekannt'}\n`+
+          `Regenwahrscheinlichkeit: ${precipitation_probability[i]}%\n`+
+          `Niederschlag: ${precipitation[i]} mm`;
+        const div=document.createElement('div');
+        div.className='stunde';
+        div.innerText=txt;
+        out.appendChild(div);
       }
     }
 
     ladeVorhersage();
-    setInterval(ladeVorhersage, 3600000);
+    setInterval(ladeVorhersage,3600000);
   </script>
 </body>
 </html>
