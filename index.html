@@ -41,6 +41,7 @@
     <h1>Stündliche Wettervorhersage</h1>
     <select id="stadt" onchange="ladeVorhersage()">
       <option value="szeged">Szeged</option>
+      <option value="szatymaz">Szatymaz</option>
       <option value="erfurt">Erfurt</option>
     </select>
   </div>
@@ -80,7 +81,8 @@
 
     const orte = {
       erfurt: { lat: 50.98, lon: 11.03 },
-      szeged: { lat: 46.25, lon: 20.15 }
+      szeged: { lat: 46.25, lon: 20.15 },
+      szatymaz: { lat: 46.32, lon: 20.04 }
     };
 
     async function ladeVorhersage() {
