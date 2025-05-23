@@ -15,8 +15,11 @@
   <div class="header">
     <h1>Stündliche Wettervorhersage</h1>
     <select id="stadt" onchange="ladeVorhersage()">
-      <option value="erfurt">Erfurt</option>
-      <option value="szeged">Szeged</option>
+      <option value="szegedz">Szeged-Zápor-Tó</option>
+      <option value="szegedv">Szeged-Vadaspark</option>
+      <option value="szegedb">Szeged-Belváros</option>
+      <option value="szegedd">Szeged-Dorozsma</option>
+      <option value="erfurth">Erfurt-Hanseviertel</option>
       <option value="szatymaz">Szatymaz</option>
     </select>
   </div>
@@ -29,7 +32,7 @@
       66:'Leichter gefrierender Regen',67:'Starker gefrierender Regen',71:'Leichter Schneefall',73:'Mäßiger Schneefall',
       75:'Starker Schneefall',77:'Schneegriesel',80:'Leichte Regenschauer',81:'Mäßige Regenschauer',82:'Heftige Regenschauer',
       85:'Leichte Schneeschauer',86:'Starke Schneeschauer',95:'Gewitter',96:'Gewitter mit leichtem Hagel',99:'Gewitter mit starkem Hagel'};
-    const orte={erfurt:{lat:50.98,lon:11.03},szeged:{lat:46.25,lon:20.15},szatymaz:{lat:46.32,lon:20.04}};
+    const orte={erfurt:{lat:50.98,lon:11.03},szegedz:{lat:46.27,lon:20.16},szegedv:{lat:46.25,lon:20.12},szegedb:{lat:46.25,lon:20.14},szegedd:{lat:46.28,lon:20.07},szatymaz:{lat:46.32,lon:20.04}};
 
     async function ladeVorhersage(){
       const st=document.getElementById('stadt').value;
